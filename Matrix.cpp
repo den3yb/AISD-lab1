@@ -1,10 +1,10 @@
 #pragma once
+#pragma once
 #include <iostream>
 #include <random>
 
 
 namespace matr {
-
 
     template <typename T>
     class matrix {
@@ -169,4 +169,51 @@ namespace matr {
             }
             return false;
         }
+        T trace() {
+            if (_s == _c) {
+                T tr = 0;
+                for (int i = 0; i < _s; i++) {
+                    tr += m[i][i];
+                }
+                return tr;
+            }
+            std::cout << "Matrix trace cant be found";
+            return 0;
+        }
+        void type() {
+            for (int i = 0; i < _s; i++) {
+                for (int j = 0; j < _c; j++) {
+                    std::cout << m[i][j] << ' ';
+                }
+                std::cout << "\n";
+            }
+            std::cout << "\n";
+        }
+        matrix bot_tria() {
+            if (_s == _c) {
+                matrix temp;
+                temp._s = _s;
+                temp._c = _c;
+                T** t = new T * [_s];;
+                for (int i = 0; i < _s; i++) { t[i] = new T[_c]; }
+                for (int i = 0; i < _s; i++) {
+                    for (int j = 1; j < _c; j++) {
+                        t[i][j] = 0;
+                    }
+                }
+                for (int i = 0; i < _s; i++) {
+                    t[i][0] = m[i][0];
+                }
+
+                for (int k = 1; k < _c; k++) {
+                    T dif = m[k - 1][k] / m[k - 1][k - 1];
+                    for (int n = k; n < _s; n++) {
+                        t[n][k] = m[n][k] - (m[n][k - 1] * dif);
+                    }
+                }
+                temp.m = t;
+                return temp;
+            }
+        }
+    };
 };

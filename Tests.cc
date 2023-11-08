@@ -64,3 +64,34 @@ TEST(Func_Tests, SumStubTest2) {
 	(d.bot_tria()).type();
 	EXPECT_TRUE(true);
 }
+
+TEST(Func_Tests, SumStubTest3) {
+	std::complex<float> t1[6] = { std::complex<float>(1,1) , std::complex<float>(2,2), std::complex<float>(3,3), std::complex<float>(4,4), std::complex<float>(5,5), std::complex<float>(6,6) };
+	std::complex<float> t2[6] = { std::complex<float>(7,7) , std::complex<float>(8,8), std::complex<float>(9,9), std::complex<float>(10,10), std::complex<float>(11,11), std::complex<float>(12,12) };
+	std::complex<float> t3[6] = { std::complex<float>(14,14) , std::complex<float>(15,15), std::complex<float>(16,16), std::complex<float>(17,17), std::complex<float>(18,18), std::complex<float>(19,19) };
+	std::complex<float> t4[16] = { std::complex<float>(1,1) , std::complex<float>(2,2), std::complex<float>(3,3), std::complex<float>(4,4), std::complex<float>(5,5), std::complex<float>(6,6), std::complex<float>(7,7) , std::complex<float>(8,8), std::complex<float>(9,9), std::complex<float>(10,10), std::complex<float>(11,11), std::complex<float>(12,12), std::complex<float>(13,13),  std::complex<float>(14,14), std::complex<float>(15,15),  std::complex<float>(16,16) };
+	std::complex<float>* p1 = &t1[0];
+	std::complex<float>* p2 = &t2[0];
+	std::complex<float>* p3 = &t3[0];
+	std::complex<float>* p4 = &t4[0];
+	std::complex<float> min = 1;
+	std::complex<float> max = 10;
+	matrix <std::complex<float>> a(2, 3, p1);
+	matrix <std::complex<float>> b(2, 3, p3);
+	matrix <std::complex<float>> c(3, 2, p2);
+	matrix <std::complex<float>> d(4, 4, p4);
+	a.type();
+	c.type();
+	std::cout << a(1, 1) << "\n";
+	(a * 2).type();
+	(a + b).type();
+	(b - a).type();
+	(b / 2).type();
+	(a * b).type();
+	(a * c).type();
+	d.type();
+	cout << d.trace() << "\n";
+	(d.bot_tria()).type();
+	EXPECT_TRUE(true);
+	EXPECT_TRUE(true);
+}

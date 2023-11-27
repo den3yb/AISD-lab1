@@ -1,29 +1,21 @@
 #pragma once
 #include <iostream>
 #include <random>
+#include <complex>
+using namespace std;
 
 
 namespace matr {
-
-    template <typename T>
-    class matrix {
-    private:
+    double epsilon = 0.0000001;
+    template<typename T> class matrix;
+    template<typename T>
+    class matrix{
         int _s;
         int _c;
         T** m;
     public:
-        matrix() { _s = 0; _c = 0; m = nullptr; }
-        matrix(int s, int c, T* temp) {
-            _s = s;
-            _c = c;
-            m = new T * [s];
-            for (int i = 0; i < s; i++) { m[i] = new T[c]; }
-            for (int i = 0; i < s; i++) {
-                for (int j = 0; j < c; j++) {
-                    m[i][j] = temp[i * _c + j];
-                }
-            }
-        }
+        matrix() { _s = 0; _c = 0; m = nullptr; };
+        template<typename T>
         matrix(int s, int c, T min, T max) {
             _s = s;
             _c = c;
@@ -38,9 +30,60 @@ namespace matr {
                     m[i][j] = x;
                 }
             }
-        }
+        };
+
+        template<typename S>
+        matrix(int s, int c, S* temp) {
+            _s = s;
+            _c = c;
+            m = new S * [s];
+            for (int i = 0; i < s; i++) { m[i] = new S[c]; }
+            for (int i = 0; i < s; i++) {
+                for (int j = 0; j < c; j++) {
+                    m[i][j] = temp[i * _c + j];
+                }
+            }
+        };
+
+        template<typename T>
+        Matrix(int s, int c, T br, T bi, T ur, T ui) {
+            _s = s;
+            _c = c;
+            m = new T * [_s];
+            for (int i = 0; i < _s; i++) { m[i] = new T[c]; }
+            for (int i = 0; i < _s; i++) {
+                for (int j = 0; j < _c; j++) {
+                    m[i][j] = complex((br + rand() % (ur - br)), (bi + rand() % (ui - bi)));
+                }
+            }
+        };
+
+        template<typename T>
+        matrix(matrix& rhs) {
+            _s = rhs._s;
+            _c = rhs._c;
+            m = new T * [_s];
+            for (int i = 0; i < _s; i++) { m[i] = new T[_c]; }
+            for (int i = 0; i < _s; i++) {
+                for (int j = 0; j < _c; j++) {
+                    m[i][j] = rhs.m[i][j];
+                }
+            }
+        };
+        template <typename R>
+        friend ostream& operator<<(ostream& out, const matrix<R>& a) {
+            for (int i = 0; i < a._s; ++i) {
+                for (int j = 0; j < a._c; ++j) {
+                    out << a.m[i][j] << " ";
+                }
+                out << endl;
+            }
+            out << "\n";
+            return out;
+
+        };
         T& operator() (int s, int c) { return m[s][c]; };
-        matrix operator+ (matrix rhs) {
+        matrix<T> operator+ (matrix<T> rhs) {
             if ((_s == rhs._s) && (_c == rhs._c)) {
                 matrix temp;
                 temp._s = _s;
@@ -55,15 +98,14 @@ namespace matr {
                 temp.m = t;
                 return temp;
             }
-            else { std::cout << "Can't be folded\n"; }
-            return *this;
-        }
-        matrix operator- (matrix rhs) {
+            else { throw "Can't be folded"; }
+        };
+        matrix<T> operator- (matrix<T> rhs) {
             if ((_s == rhs._s) && (_c == rhs._c)) {
                 matrix temp;
                 temp._s = _s;
                 temp._c = _c;
-                T** t = new T * [_s];;
+                T** t = new T* [_s];;
                 for (int i = 0; i < _s; i++) { t[i] = new T[_c]; }
                 for (int i = 0; i < _s; i++) {
                     for (int j = 0; j < _c; j++) {
@@ -74,15 +116,13 @@ namespace matr {
                 return temp;
             }
             else {
-                std::cout << "Can't be folded";
-                return *this;
-            }
+                throw "Can't be folded"; }
         }
-        matrix operator* (T mul) {
+        matrix<T> operator* (T mul) {
             matrix temp;
             temp._s = _s;
             temp._c = _c;
-            T** t = new T * [_s];;
+            T** t = new T* [_s];;
             for (int i = 0; i < _s; i++) { t[i] = new T[_c]; }
             for (int i = 0; i < _s; i++) {
                 for (int j = 0; j < _c; j++) {
@@ -92,12 +132,12 @@ namespace matr {
             temp.m = t;
             return temp;
         }
-        matrix operator* (matrix rhs) {
+        matrix<T> operator* (matrix<T> rhs) {
             if (_c == rhs._s) {
                 matrix temp;
                 temp._s = _s;
                 temp._c = rhs._c;
-                T** t = new T * [_s];;
+                T** t = new T* [_s];;
                 for (int i = 0; i < _s; i++) { t[i] = new T[_c]; }
                 for (int i = 0; i < _s; i++) {
                     for (int j = 0; j < rhs._c; j++) {
@@ -106,24 +146,24 @@ namespace matr {
                 }
                 for (int i = 0; i < _s; i++) {
                     for (int j = 0; j < rhs._c; j++) {
-                        for (int k = 0; k < _c; k++) {
+                        for (int k = 0;k<_c;k++){
                             t[i][j] += m[i][k] * rhs.m[k][j];
                         }
                     }
                 }
                 temp.m = t;
                 return temp;
-
+           
             }
-            else { std::cout << "Can't be multyple\n"; }
-            return *this;
+            else { throw"Can't be multyple"; }
         }
-        matrix operator/ (T div) {
-            /*if (div != 0) {
+        matrix<T> operator/ (T div) {
+            //if (div == 0) { throw "Cant division on 0"; }
+            //else {
                 matrix temp;
                 temp._s = _s;
                 temp._c = _c;
-                T** t = new T* [_s];;
+                T** t = new T * [_s];
                 for (int i = 0; i < _s; i++) { t[i] = new T[_c]; }
                 for (int i = 0; i < _s; i++) {
                     for (int j = 0; j < _c; j++) {
@@ -132,23 +172,9 @@ namespace matr {
                 }
                 temp.m = t;
                 return temp;
-            }
-            else { std::cout << "Can't be division"; }
-            return *this;*/
-            matrix temp;
-            temp._s = _s;
-            temp._c = _c;
-            T** t = new T * [_s];;
-            for (int i = 0; i < _s; i++) { t[i] = new T[_c]; }
-            for (int i = 0; i < _s; i++) {
-                for (int j = 0; j < _c; j++) {
-                    t[i][j] = m[i][j] / div;
-                }
-            }
-            temp.m = t;
-            return temp;
+            //}
         }
-        bool operator== (matrix rhs) {
+        bool operator== (matrix<T> rhs) {
             if (_s == rhs._s && _c == rhs._c) {
                 for (int i = 0; i < _s; i++) {
                     for (int j = 0; j < _c; j++) {
@@ -156,9 +182,10 @@ namespace matr {
                     }
                 }
             }
+            
             return true;
         }
-        bool operator!= (matrix rhs) {
+        bool operator!= (matrix<T> rhs) {
             if (_s == rhs._s && _c == rhs._c) {
                 for (int i = 0; i < _s; i++) {
                     for (int j = 0; j < _c; j++) {
@@ -176,43 +203,39 @@ namespace matr {
                 }
                 return tr;
             }
-            std::cout << "Matrix trace cant be found";
-            return 0;
-        }
-        void type() {
-            for (int i = 0; i < _s; i++) {
-                for (int j = 0; j < _c; j++) {
-                    std::cout << m[i][j] << ' ';
-                }
-                std::cout << "\n";
-            }
-            std::cout << "\n";
-        }
-        matrix bot_tria() {
-            if (_s == _c) {
-                matrix temp;
-                temp._s = _s;
-                temp._c = _c;
-                T** t = new T * [_s];;
-                for (int i = 0; i < _s; i++) { t[i] = new T[_c]; }
-                for (int i = 0; i < _s; i++) {
-                    for (int j = 1; j < _c; j++) {
-                        t[i][j] = 0;
-                    }
-                }
-                for (int i = 0; i < _s; i++) {
-                    t[i][0] = m[i][0];
-                }
-
-                for (int k = 1; k < _c; k++) {
-                    T dif = m[k - 1][k] / m[k - 1][k - 1];
-                    for (int n = k; n < _s; n++) {
-                        t[n][k] = m[n][k] - (m[n][k - 1] * dif);
-                    }
-                }
-                temp.m = t;
-                return temp;
-            }
-        }
+            else { throw"Matrix trace cant be found"; }
+        }    
+       
     };
+    template <typename T>
+    matrix<T> bot_trian(matrix<T> a) {
+        if (a._s == a._c) {
+            matrix temp;
+            temp._s = a._s;
+            temp._c = a._c;
+            T** t = new T * [a._s];;
+            for (int i = 0; i < a._s; i++) { t[i] = new T[a._c]; }
+            for (int i = 0; i < a._s; i++) {
+                for (int j = 1; j < a._c; j++) {
+                    t[i][j] = 0;
+                }
+            }
+            for (int i = 0; i < a._s; i++) {
+                t[i][0] = a.m[i][0];
+            }
+
+            for (int k = 1; k < a._c; k++) {
+                if (a.m[k - 1][k - 1] == 0) { throw "Cant be into bottom triangle"; }
+                T dif = a.m[k - 1][k] / a.m[k - 1][k - 1];
+                for (int n = k; n < a._s; n++) {
+                    t[n][k] = a.m[n][k] - (a.m[n][k - 1] * dif);
+                }
+            }
+            temp.m = t;
+            return temp;
+        }
+        else { throw "Incorrect size for bottom triangle"; }
+        }
 };
+
+
